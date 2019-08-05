@@ -126,9 +126,11 @@ public class TypeAliasRegistry {
   }
 
   public void registerAliases(String packageName, Class<?> superType) {
+    //获取packageName下superClass的所有子类
     ResolverUtil<Class<?>> resolverUtil = new ResolverUtil<>();
     resolverUtil.find(new ResolverUtil.IsA(superType), packageName);
     Set<Class<? extends Class<?>>> typeSet = resolverUtil.getClasses();
+    //遍历加载，除匿名类、接口、成员类型外都会被注册
     for (Class<?> type : typeSet) {
       // Ignore inner classes and interfaces (including package-info.java)
       // Skip also inner classes. See issue #6
@@ -139,7 +141,9 @@ public class TypeAliasRegistry {
   }
 
   public void registerAlias(Class<?> type) {
+    //类的简单类命
     String alias = type.getSimpleName();
+    //注解自定义别名，如果没有自定义别名就使用简单类名
     Alias aliasAnnotation = type.getAnnotation(Alias.class);
     if (aliasAnnotation != null) {
       alias = aliasAnnotation.value();
