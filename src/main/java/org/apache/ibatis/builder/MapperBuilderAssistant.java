@@ -109,6 +109,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
     try {
       unresolvedCacheRef = true;
       Cache cache = configuration.getCache(namespace);
+      //需要加载完成才能use
       if (cache == null) {
         throw new IncompleteElementException("No cache for namespace '" + namespace + "' could be found.");
       }
@@ -179,6 +180,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
       Discriminator discriminator,
       List<ResultMapping> resultMappings,
       Boolean autoMapping) {
+    //加载命名空间
     id = applyCurrentNamespace(id, false);
     extend = applyCurrentNamespace(extend, true);
 
@@ -192,6 +194,7 @@ public class MapperBuilderAssistant extends BaseBuilder {
       // Remove parent constructor if this resultMap declares a constructor.
       boolean declaresConstructor = false;
       for (ResultMapping resultMapping : resultMappings) {
+        //判断是否定义过构造器
         if (resultMapping.getFlags().contains(ResultFlag.CONSTRUCTOR)) {
           declaresConstructor = true;
           break;

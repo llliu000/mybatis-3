@@ -96,6 +96,7 @@ public class XMLMapperBuilder extends BaseBuilder {
       bindMapperForNamespace();
     }
 
+    //在解析失败后重试加载（同步操作、仅一次）
     parsePendingResultMaps();
     parsePendingCacheRefs();
     parsePendingStatements();
@@ -193,6 +194,7 @@ public class XMLMapperBuilder extends BaseBuilder {
       try {
         cacheRefResolver.resolveCacheRef();
       } catch (IncompleteElementException e) {
+        //deal未完成加载
         configuration.addIncompleteCacheRef(cacheRefResolver);
       }
     }
@@ -200,15 +202,15 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   private void cacheElement(XNode context) {
     if (context != null) {
-      String type = context.getStringAttribute("type", "PERPETUAL");
+      String type = context.getStringAttribute("type", "PERPETUAL");//缓存类型
       Class<? extends Cache> typeClass = typeAliasRegistry.resolveAlias(type);
-      String eviction = context.getStringAttribute("eviction", "LRU");
-      Class<? extends Cache> evictionClass = typeAliasRegistry.resolveAlias(eviction);
-      Long flushInterval = context.getLongAttribute("flushInterval");
-      Integer size = context.getIntAttribute("size");
-      boolean readWrite = !context.getBooleanAttribute("readOnly", false);
-      boolean blocking = context.getBooleanAttribute("blocking", false);
-      Properties props = context.getChildrenAsProperties();
+      String eviction = context.getStringAttribute("eviction", "LRU");//缓存策略
+      Class<? extends Cache> evictionClass = typeAliasRegistry.resolveAlias(eviction);//淘汰策略
+      Long flushInterval = context.getLongAttribute("flushInterval");//刷新时间
+      Integer size = context.getIntAttribute("size");//缓存大小
+      boolean readWrite = !context.getBooleanAttribute("readOnly", false);//是否只读
+      boolean blocking = context.getBooleanAttribute("blocking", false);//是否阻塞
+      Properties props = context.getChildrenAsProperties();//获取子节点属性
       builderAssistant.useNewCache(typeClass, evictionClass, flushInterval, size, readWrite, blocking, props);
     }
   }
