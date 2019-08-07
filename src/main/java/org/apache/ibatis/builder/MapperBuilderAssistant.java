@@ -265,10 +265,11 @@ public class MapperBuilderAssistant extends BaseBuilder {
       LanguageDriver lang,
       String resultSets) {
 
-    if (unresolvedCacheRef) {
+    if (unresolvedCacheRef) {//需要等待缓存引yong加载完成
       throw new IncompleteElementException("Cache-ref not yet resolved");
     }
 
+    //deal命名空间
     id = applyCurrentNamespace(id, false);
     boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
 
