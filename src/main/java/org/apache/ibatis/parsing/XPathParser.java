@@ -47,7 +47,9 @@ public class XPathParser {
 
   private final Document document;
   private boolean validation;
+  //用于加载本地 DTD文件
   private EntityResolver entityResolver;
+  //mybatis-config.xml <properties> 标签定义的键位对集合
   private Properties variables;
   private XPath xpath;
 
@@ -255,6 +257,7 @@ public class XPathParser {
         public void warning(SAXParseException exception) throws SAXException {
         }
       });
+      //加载XML文件
       return builder.parse(inputSource);
     } catch (Exception e) {
       throw new BuilderException("Error creating document instance.  Cause: " + e, e);
