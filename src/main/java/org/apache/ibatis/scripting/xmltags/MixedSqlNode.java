@@ -29,6 +29,7 @@ public class MixedSqlNode implements SqlNode {
 
   @Override
   public boolean apply(DynamicContext context) {
+    //动态 SQL 的根节点和大部分嵌套设置的根节点
     contents.forEach(node -> node.apply(context));
     return true;
   }

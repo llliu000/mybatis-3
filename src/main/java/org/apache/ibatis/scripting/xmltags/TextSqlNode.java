@@ -47,6 +47,7 @@ public class TextSqlNode implements SqlNode {
 
   @Override
   public boolean apply(DynamicContext context) {
+    //处理text情况为动态和静态的情况,如果sql中包含${}表示为动态
     GenericTokenParser parser = createParser(new BindingTokenParser(context, injectionFilter));
     context.appendSql(parser.parse(text));
     return true;
@@ -74,6 +75,7 @@ public class TextSqlNode implements SqlNode {
       } else if (SimpleTypeRegistry.isSimpleType(parameter.getClass())) {
         context.getBindings().put("value", parameter);
       }
+      //执行OGNL解析,判断是否存在sql注入
       Object value = OgnlCache.getValue(content, context.getBindings());
       String srtValue = value == null ? "" : String.valueOf(value); // issue #274 return "" instead of "null"
       checkInjection(srtValue);

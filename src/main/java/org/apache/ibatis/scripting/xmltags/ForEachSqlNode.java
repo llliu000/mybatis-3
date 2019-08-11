@@ -56,7 +56,7 @@ public class ForEachSqlNode implements SqlNode {
       return true;
     }
     boolean first = true;
-    applyOpen(context);
+    applyOpen(context);//open标签处理
     int i = 0;
     for (Object o : iterable) {
       DynamicContext oldContext = context;
@@ -67,6 +67,7 @@ public class ForEachSqlNode implements SqlNode {
       }
       int uniqueNumber = context.getUniqueNumber();
       // Issue #709
+      //处理index和item
       if (o instanceof Map.Entry) {
         @SuppressWarnings("unchecked")
         Map.Entry<Object, Object> mapEntry = (Map.Entry<Object, Object>) o;
@@ -76,6 +77,7 @@ public class ForEachSqlNode implements SqlNode {
         applyIndex(context, i, uniqueNumber);
         applyItem(context, o, uniqueNumber);
       }
+      //处理#{}
       contents.apply(new FilteredDynamicContext(configuration, context, index, item, uniqueNumber));
       if (first) {
         first = !((PrefixedContext) context).isPrefixApplied();
@@ -83,7 +85,7 @@ public class ForEachSqlNode implements SqlNode {
       context = oldContext;
       i++;
     }
-    applyClose(context);
+    applyClose(context);//close标签处理
     context.getBindings().remove(item);
     context.getBindings().remove(index);
     return true;

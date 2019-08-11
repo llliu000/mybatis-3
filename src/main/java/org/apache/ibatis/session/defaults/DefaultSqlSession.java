@@ -192,7 +192,7 @@ public class DefaultSqlSession implements SqlSession {
   @Override
   public int update(String statement, Object parameter) {
     try {
-      dirty = true;
+      dirty = true;//启动自动提交模式
       MappedStatement ms = configuration.getMappedStatement(statement);
       return executor.update(ms, wrapCollection(parameter));
     } catch (Exception e) {

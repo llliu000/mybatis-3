@@ -58,12 +58,13 @@ public class SelectKeyGenerator implements KeyGenerator {
   private void processGeneratedKeys(Executor executor, MappedStatement ms, Object parameter) {
     try {
       if (parameter != null && keyStatement != null && keyStatement.getKeyProperties() != null) {
-        String[] keyProperties = keyStatement.getKeyProperties();
+        String[] keyProperties = keyStatement.getKeyProperties();//获取主键字段
         final Configuration configuration = ms.getConfiguration();
-        final MetaObject metaParam = configuration.newMetaObject(parameter);
+        final MetaObject metaParam = configuration.newMetaObject(parameter);//映射参数
         if (keyProperties != null) {
           // Do not close keyExecutor.
           // The transaction will be closed by parent executor.
+          //执行查询获取主键
           Executor keyExecutor = configuration.newExecutor(executor.getTransaction(), ExecutorType.SIMPLE);
           List<Object> values = keyExecutor.query(keyStatement, parameter, RowBounds.DEFAULT, Executor.NO_RESULT_HANDLER);
           if (values.size() == 0) {
@@ -71,6 +72,7 @@ public class SelectKeyGenerator implements KeyGenerator {
           } else if (values.size() > 1) {
             throw new ExecutorException("SelectKey returned more than one value.");
           } else {
+            //将查询到的值设置到对应的字段上
             MetaObject metaResult = configuration.newMetaObject(values.get(0));
             if (keyProperties.length == 1) {
               if (metaResult.hasGetter(keyProperties[0])) {

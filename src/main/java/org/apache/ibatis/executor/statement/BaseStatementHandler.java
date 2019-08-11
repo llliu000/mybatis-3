@@ -60,7 +60,7 @@ public abstract class BaseStatementHandler implements StatementHandler {
     this.objectFactory = configuration.getObjectFactory();
 
     if (boundSql == null) { // issue #435, get the key before calculating the statement
-      generateKeys(parameterObject);
+      generateKeys(parameterObject);//主键生产策略
       boundSql = mappedStatement.getBoundSql(parameterObject);
     }
 
@@ -82,12 +82,12 @@ public abstract class BaseStatementHandler implements StatementHandler {
 
   @Override
   public Statement prepare(Connection connection, Integer transactionTimeout) throws SQLException {
-    ErrorContext.instance().sql(boundSql.getSql());
+    ErrorContext.instance().sql(boundSql.getSql());//日志组件初始化
     Statement statement = null;
     try {
-      statement = instantiateStatement(connection);
-      setStatementTimeout(statement, transactionTimeout);
-      setFetchSize(statement);
+      statement = instantiateStatement(connection);//初始化语句
+      setStatementTimeout(statement, transactionTimeout);//设置超时时间
+      setFetchSize(statement);//设置滚动大小
       return statement;
     } catch (SQLException e) {
       closeStatement(statement);
@@ -138,6 +138,7 @@ public abstract class BaseStatementHandler implements StatementHandler {
   protected void generateKeys(Object parameter) {
     KeyGenerator keyGenerator = mappedStatement.getKeyGenerator();
     ErrorContext.instance().store();
+    //主键生产策略
     keyGenerator.processBefore(executor, mappedStatement, null, parameter);
     ErrorContext.instance().recall();
   }

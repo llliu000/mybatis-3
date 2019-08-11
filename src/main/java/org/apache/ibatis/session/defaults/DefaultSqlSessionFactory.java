@@ -105,8 +105,10 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
 
   private SqlSession openSessionFromConnection(ExecutorType execType, Connection connection) {
     try {
+      //事物是否自动提交
       boolean autoCommit;
       try {
+        //从数据库连中获取事物提交方式
         autoCommit = connection.getAutoCommit();
       } catch (SQLException e) {
         // Failover to true, as most poor drivers
@@ -114,6 +116,7 @@ public class DefaultSqlSessionFactory implements SqlSessionFactory {
         autoCommit = true;
       }
       final Environment environment = configuration.getEnvironment();
+      //事物工厂构建事物
       final TransactionFactory transactionFactory = getTransactionFactoryFromEnvironment(environment);
       final Transaction tx = transactionFactory.newTransaction(connection);
       final Executor executor = configuration.newExecutor(tx, execType);

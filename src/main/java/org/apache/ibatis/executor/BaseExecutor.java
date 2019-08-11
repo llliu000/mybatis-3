@@ -143,6 +143,7 @@ public abstract class BaseExecutor implements Executor {
     if (closed) {
       throw new ExecutorException("Executor was closed.");
     }
+    //在嵌套查询结束或者强制主动刷新的情况下将缓存清空
     if (queryStack == 0 && ms.isFlushCacheRequired()) {
       clearLocalCache();
     }
@@ -153,6 +154,7 @@ public abstract class BaseExecutor implements Executor {
       if (list != null) {
         handleLocallyCachedOutputParameters(ms, key, parameter, boundSql);
       } else {
+        //执行数据库查询操作
         list = queryFromDatabase(ms, parameter, rowBounds, resultHandler, key, boundSql);
       }
     } finally {
@@ -335,8 +337,10 @@ public abstract class BaseExecutor implements Executor {
   protected Connection getConnection(Log statementLog) throws SQLException {
     Connection connection = transaction.getConnection();
     if (statementLog.isDebugEnabled()) {
+      //如果是debug模式使用动态代理打印执行日志
       return ConnectionLogger.newInstance(connection, statementLog, queryStack);
     } else {
+      //直接返回
       return connection;
     }
   }

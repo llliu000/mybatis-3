@@ -61,23 +61,24 @@ public class DefaultParameterHandler implements ParameterHandler {
   @Override
   public void setParameters(PreparedStatement ps) {
     ErrorContext.instance().activity("setting parameters").object(mappedStatement.getParameterMap().getId());
-    List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
+    List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();//参数映射
     if (parameterMappings != null) {
       for (int i = 0; i < parameterMappings.size(); i++) {
         ParameterMapping parameterMapping = parameterMappings.get(i);
-        if (parameterMapping.getMode() != ParameterMode.OUT) {
+        if (parameterMapping.getMode() != ParameterMode.OUT) {//处理in或inout参数映射
           Object value;
           String propertyName = parameterMapping.getProperty();
-          if (boundSql.hasAdditionalParameter(propertyName)) { // issue #448 ask first for additional params
+          if (boundSql.hasAdditionalParameter(propertyName)) { //动态sql参数 issue #448 ask first for additional params
             value = boundSql.getAdditionalParameter(propertyName);
           } else if (parameterObject == null) {
             value = null;
-          } else if (typeHandlerRegistry.hasTypeHandler(parameterObject.getClass())) {
+          } else if (typeHandlerRegistry.hasTypeHandler(parameterObject.getClass())) {//类型是TypeHandler则通过他处理
             value = parameterObject;
-          } else {
+          } else {//如果都不是则通过反射的方式处理
             MetaObject metaObject = configuration.newMetaObject(parameterObject);
             value = metaObject.getValue(propertyName);
           }
+          //从参数中获取
           TypeHandler typeHandler = parameterMapping.getTypeHandler();
           JdbcType jdbcType = parameterMapping.getJdbcType();
           if (value == null && jdbcType == null) {
