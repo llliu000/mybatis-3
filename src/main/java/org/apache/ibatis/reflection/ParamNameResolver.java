@@ -49,13 +49,24 @@ public class ParamNameResolver {
 
   private boolean hasParamAnnotation;
 
+  /**
+   * 处理mapper接口中方法定义的参数列表
+   */
   public ParamNameResolver(Configuration config, Method method) {
     final Class<?>[] paramTypes = method.getParameterTypes();
     final Annotation[][] paramAnnotations = method.getParameterAnnotations();
+    /**
+     * 记录参数在参数列表中的索引位置与参数名称之间的关系
+     * ①key 表示参数在参数列表中的索引位置，value 表示参数名称
+     * ②参数名称可以通过＠Param 注解指定，如果没有指定＠Param 注解，则使用参数索引作为其名称
+     */
     final SortedMap<Integer, String> map = new TreeMap<>();
     int paramCount = paramAnnotations.length;
     // get names from @Param annotations
     for (int paramIndex = 0; paramIndex < paramCount; paramIndex++) {
+      /**
+       * 特殊类型的参数 ps: RowBounds类型、 ResultHandler类型
+       */
       if (isSpecialParameter(paramTypes[paramIndex])) {
         // skip special parameters
         continue;
@@ -69,11 +80,15 @@ public class ParamNameResolver {
         }
       }
       if (name == null) {
+        /**
+         * 该参数没有对应的＠Param注解，则根据自己置决定是否使用参数实际名称作为其名称
+         */
         // @Param was not specified.
         if (config.isUseActualParamName()) {
           name = getActualParamName(method, paramIndex);
         }
         if (name == null) {
+          //使用参数的索引作为其名称
           // use the parameter index as the name ("0", "1", ...)
           // gcode issue #71
           name = String.valueOf(map.size());

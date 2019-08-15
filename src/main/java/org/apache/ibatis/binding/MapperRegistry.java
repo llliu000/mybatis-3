@@ -33,13 +33,22 @@ import org.apache.ibatis.session.SqlSession;
  */
 public class MapperRegistry {
 
+  /**
+   * Mybatis全局唯一配置对象,包含了所有的配置信息
+   */
   private final Configuration config;
+  /**
+   * 记录Mapper接口与代理工厂之间的关系
+   */
   private final Map<Class<?>, MapperProxyFactory<?>> knownMappers = new HashMap<>();
 
   public MapperRegistry(Configuration config) {
     this.config = config;
   }
 
+  /**
+   * 获取Mapper接口的代理对象(jdk动态代理生成)
+   */
   @SuppressWarnings("unchecked")
   public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
     final MapperProxyFactory<T> mapperProxyFactory = (MapperProxyFactory<T>) knownMappers.get(type);
@@ -57,6 +66,10 @@ public class MapperRegistry {
     return knownMappers.containsKey(type);
   }
 
+  /**
+   * 将映射配置文件及Mapper接口中的注解信息记录到knownMappers中
+   * type:mapper接口的class对象
+   */
   public <T> void addMapper(Class<T> type) {
     if (type.isInterface()) {
       if (hasMapper(type)) {

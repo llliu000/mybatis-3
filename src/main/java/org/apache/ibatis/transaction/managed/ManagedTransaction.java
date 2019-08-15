@@ -1,28 +1,28 @@
 /**
- *    Copyright 2009-2017 the original author or authors.
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
+ * Copyright 2009-2017 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.apache.ibatis.transaction.managed;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import javax.sql.DataSource;
 
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 import org.apache.ibatis.session.TransactionIsolationLevel;
 import org.apache.ibatis.transaction.Transaction;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * {@link Transaction} that lets the container manage the full lifecycle of the transaction.
@@ -31,7 +31,6 @@ import org.apache.ibatis.transaction.Transaction;
  * By default, it closes the connection but can be configured not to do it.
  *
  * @author Clinton Begin
- *
  * @see ManagedTransactionFactory
  */
 public class ManagedTransaction implements Transaction {
@@ -62,6 +61,10 @@ public class ManagedTransaction implements Transaction {
     return this.connection;
   }
 
+  /**
+   * commit（）、 rollback（）方法都是空实现，
+   * 事务的提交和回漆都是依 靠容器管理的
+   */
   @Override
   public void commit() throws SQLException {
     // Does nothing

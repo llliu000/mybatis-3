@@ -46,7 +46,13 @@ import org.apache.ibatis.session.SqlSession;
  */
 public class MapperMethod {
 
+  /**
+   * 记录sql语句的名称和类型
+   */
   private final SqlCommand command;
+  /**
+   * mapper接口中方法签名相关信息
+   */
   private final MethodSignature method;
 
   public MapperMethod(Class<?> mapperInterface, Method method, Configuration config) {
@@ -218,12 +224,19 @@ public class MapperMethod {
 
   public static class SqlCommand {
 
+    /**
+     * SQL 语句的名称是由 Mapper 接口的名称与对应的方法名称组成的
+     * mapperinterface.getName() + ”." + method.getName()
+     */
     private final String name;
     private final SqlCommandType type;
 
     public SqlCommand(Configuration configuration, Class<?> mapperInterface, Method method) {
       final String methodName = method.getName();
       final Class<?> declaringClass = method.getDeclaringClass();
+      /**
+       * MappedStatement封装了sql相关信息,在初始化的时候创建
+       */
       MappedStatement ms = resolveMappedStatement(mapperInterface, methodName, declaringClass,
           configuration);
       if (ms == null) {
