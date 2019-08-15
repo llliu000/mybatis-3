@@ -32,11 +32,11 @@ import org.apache.ibatis.reflection.wrapper.ObjectWrapperFactory;
  */
 public class MetaObject {
 
-  private final Object originalObject;
-  private final ObjectWrapper objectWrapper;
-  private final ObjectFactory objectFactory;
-  private final ObjectWrapperFactory objectWrapperFactory;
-  private final ReflectorFactory reflectorFactory;
+  private final Object originalObject;//原始javabean对象
+  private final ObjectWrapper objectWrapper;//包装原始javabean后的对象
+  private final ObjectFactory objectFactory;//实例化javabean对象的工厂
+  private final ObjectWrapperFactory objectWrapperFactory;//实例化包装类对象工厂
+  private final ReflectorFactory reflectorFactory;//反射工厂对象(包含创建和缓存)
 
   private MetaObject(Object object, ObjectFactory objectFactory, ObjectWrapperFactory objectWrapperFactory, ReflectorFactory reflectorFactory) {
     this.originalObject = object;
@@ -110,8 +110,9 @@ public class MetaObject {
   }
 
   public Object getValue(String name) {
-    PropertyTokenizer prop = new PropertyTokenizer(name);
+    PropertyTokenizer prop = new PropertyTokenizer(name);//解析属性表达式
     if (prop.hasNext()) {
+      //根据 PropertyTokenizer 解析后指定的属性，创建相应的 MetaObject 对象
       MetaObject metaValue = metaObjectForProperty(prop.getIndexedName());
       if (metaValue == SystemMetaObject.NULL_META_OBJECT) {
         return null;

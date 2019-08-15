@@ -46,15 +46,42 @@ import org.apache.ibatis.reflection.property.PropertyNamer;
  */
 public class Reflector {
 
+  /**
+   * 对应的class类型
+   */
   private final Class<?> type;
+  /**
+   * 可读属性的名称集合,可读属性就是存在getter方法的属性
+   */
   private final String[] readablePropertyNames;
+  /**
+   * 可写属性的名称集合,可写属性就是存在setter方法的属性
+   */
   private final String[] writablePropertyNames;
+  /**
+   * 记录了属性相对应的setter方法,
+   * key是属性名称,
+   * value是Invoker 对象，它是对 setter 方法对应 Method 对象的封装
+   */
   private final Map<String, Invoker> setMethods = new HashMap<>();
   private final Map<String, Invoker> getMethods = new HashMap<>();
+
+  /**
+   * 记录setter方法的参数值类型
+   */
   private final Map<String, Class<?>> setTypes = new HashMap<>();
+  /**
+   * 记录getter返回值的类型
+   */
   private final Map<String, Class<?>> getTypes = new HashMap<>();
+  /**
+   * 默认构造方法
+   */
   private Constructor<?> defaultConstructor;
 
+  /**
+   * 所有属性名称的集合
+   */
   private Map<String, String> caseInsensitivePropertyMap = new HashMap<>();
 
   public Reflector(Class<?> clazz) {
