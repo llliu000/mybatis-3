@@ -23,6 +23,7 @@ import java.util.StringJoiner;
 import org.apache.ibatis.reflection.ArrayUtil;
 
 /**
+ * 缓存key,受mybatis中动态sql影响
  * @author Clinton Begin
  */
 public class CacheKey implements Cloneable, Serializable {
@@ -34,9 +35,9 @@ public class CacheKey implements Cloneable, Serializable {
   private static final int DEFAULT_MULTIPLYER = 37;
   private static final int DEFAULT_HASHCODE = 17;
 
-  private final int multiplier;
-  private int hashcode;
-  private long checksum;
+  private final int multiplier;//参与计算 hashcode ，默认位是 37
+  private int hashcode;//CacheKey 对象的 hashcode ，初始位是 17
+  private long checksum;//校验和
   private int count;
   // 8/21/2017 - Sonarlint flags this as needing to be marked transient.  While true if content is not serializable, this is not always true and thus should not be marked transient.
   private List<Object> updateList;

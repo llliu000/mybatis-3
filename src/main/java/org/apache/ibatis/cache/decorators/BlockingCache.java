@@ -36,9 +36,9 @@ import org.apache.ibatis.cache.CacheException;
  */
 public class BlockingCache implements Cache {
 
-  private long timeout;
+  private long timeout;//阻塞时长
   private final Cache delegate;
-  private final ConcurrentHashMap<Object, ReentrantLock> locks;
+  private final ConcurrentHashMap<Object, ReentrantLock> locks;//每个key都有对应的 reentrantLock 对象
 
   public BlockingCache(Cache delegate) {
     this.delegate = delegate;
@@ -99,6 +99,7 @@ public class BlockingCache implements Cache {
     Lock lock = getLockForKey(key);
     if (timeout > 0) {
       try {
+        //带超时时间尝试获取锁超
         boolean acquired = lock.tryLock(timeout, TimeUnit.MILLISECONDS);
         if (!acquired) {
           throw new CacheException("Couldn't get a lock in " + timeout + " for the key " +  key + " at the cache " + delegate.getId());

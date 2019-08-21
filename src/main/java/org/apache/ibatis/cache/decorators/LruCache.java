@@ -48,13 +48,21 @@ public class LruCache implements Cache {
   }
 
   public void setSize(final int size) {
+    /**
+     * 注意 LinkedHashMap 构造函数的第三个参数， true表示该 LinkedHashMap 记录的顺序是
+     *  access-order ，也就是说 LinkedHashMap get （）方法会改变其记录的顺序
+     */
     keyMap = new LinkedHashMap<Object, Object>(size, .75F, true) {
       private static final long serialVersionUID = 4267176411845948333L;
 
+      /**
+       * 当调用 LinkedHashMap put （）方法时，会调用该方法
+       */
       @Override
       protected boolean removeEldestEntry(Map.Entry<Object, Object> eldest) {
         boolean tooBig = size() > size;
         if (tooBig) {
+          //如采已到达缓存上限，则更新 eldestKey 字段， 后面会删除该项
           eldestKey = eldest.getKey();
         }
         return tooBig;
@@ -70,6 +78,7 @@ public class LruCache implements Cache {
 
   @Override
   public Object getObject(Object key) {
+    //修改 LinkedHashMap 中记录的顺序,表示最近使用
     keyMap.get(key); //touch
     return delegate.getObject(key);
   }
