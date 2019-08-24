@@ -125,8 +125,9 @@ public class XMLMapperBuilder extends BaseBuilder {
       cacheElement(context.evalNode("cache"));
       //TODO 解析＜parameterMap＞节点（该节点废弃）
       parameterMapElement(context.evalNodes("/mapper/parameterMap"));
-
+      //<ResultMap>节点解析
       resultMapElements(context.evalNodes("/mapper/resultMap"));
+      //<Sql>节点解析
       sqlElement(context.evalNodes("/mapper/sql"));
       buildStatementFromContext(context.evalNodes("select|insert|update|delete"));
     } catch (Exception e) {
@@ -426,6 +427,9 @@ public class XMLMapperBuilder extends BaseBuilder {
     return builderAssistant.buildResultMapping(resultType, property, column, javaTypeClass, jdbcTypeEnum, nestedSelect, nestedResultMap, notNullColumn, columnPrefix, typeHandlerClass, flags, resultSet, foreignColumn, lazy);
   }
 
+  /**
+   * 只会处理 <association＞、＜collection＞和＜case＞三种节点
+   */
   private String processNestedResultMappings(XNode context, List<ResultMapping> resultMappings, Class<?> enclosingType) throws Exception {
     if ("association".equals(context.getName())
         || "collection".equals(context.getName())
