@@ -270,6 +270,7 @@ public class XMLMapperBuilder extends BaseBuilder {
 
   private ResultMap resultMapElement(XNode resultMapNode, List<ResultMapping> additionalResultMappings, Class<?> enclosingType) throws Exception {
     ErrorContext.instance().activity("processing " + resultMapNode.getValueBasedIdentifier());
+    //获取<ResultMap>节点的type属性,表示结果集将被映射成Type指定类型的对象
     String type = resultMapNode.getStringAttribute("type",
         resultMapNode.getStringAttribute("ofType",
             resultMapNode.getStringAttribute("resultType",
@@ -279,8 +280,9 @@ public class XMLMapperBuilder extends BaseBuilder {
       typeClass = inheritEnclosingType(resultMapNode, enclosingType);
     }
     Discriminator discriminator = null;
-    List<ResultMapping> resultMappings = new ArrayList<>();
+    List<ResultMapping> resultMappings = new ArrayList<>();//记录<ResultMap>节点解析结果
     resultMappings.addAll(additionalResultMappings);
+    //解析<ResultMap>子节点
     List<XNode> resultChildren = resultMapNode.getChildren();
     for (XNode resultChild : resultChildren) {
       if ("constructor".equals(resultChild.getName())) {
@@ -288,6 +290,7 @@ public class XMLMapperBuilder extends BaseBuilder {
       } else if ("discriminator".equals(resultChild.getName())) {
         discriminator = processDiscriminatorElement(resultChild, typeClass, resultMappings);
       } else {
+        // 处理<id＞、＜result＞、<association＞、＜collection＞等节点
         List<ResultFlag> flags = new ArrayList<>();
         if ("id".equals(resultChild.getName())) {
           flags.add(ResultFlag.ID);
@@ -295,12 +298,16 @@ public class XMLMapperBuilder extends BaseBuilder {
         resultMappings.add(buildResultMappingFromContext(resultChild, typeClass, flags));
       }
     }
+    //获取<ResultMap>节点的ID属性,默认值会拼接所有父节点的ID或value或property属性值
     String id = resultMapNode.getStringAttribute("id",
             resultMapNode.getValueBasedIdentifier());
+    //获取＜resultMap>节点的 extends 属性，该属性指定了该＜resultMap＞节点 继承关系
     String extend = resultMapNode.getStringAttribute("extends");
+    //获取<ResultMap>节点配置是否开启自动映射,false时需要手动指定映射关系
     Boolean autoMapping = resultMapNode.getBooleanAttribute("autoMapping");
     ResultMapResolver resultMapResolver = new ResultMapResolver(builderAssistant, id, typeClass, extend, discriminator, resultMappings, autoMapping);
     try {
+      //创建 ResultMap 对象，并添加到 Configuration.resultMaps 集合中，该集合是 StrictMap 类型
       return resultMapResolver.resolve();
     } catch (IncompleteElementException  e) {
       configuration.addIncompleteResultMap(resultMapResolver);
@@ -399,8 +406,14 @@ public class XMLMapperBuilder extends BaseBuilder {
     String javaType = context.getStringAttribute("javaType");
     String jdbcType = context.getStringAttribute("jdbcType");
     String nestedSelect = context.getStringAttribute("select");
+    /**
+     * 解析＜association＞节点
+     * 如果未指定＜association＞节点的 resultMap的属性，则是匿名的嵌套映射，需要通过
+     *  processNestedResultMappings()方法解析该匿名的嵌套映射
+     */
     String nestedResultMap = context.getStringAttribute("resultMap",
         processNestedResultMappings(context, Collections.emptyList(), resultType));
+
     String notNullColumn = context.getStringAttribute("notNullColumn");
     String columnPrefix = context.getStringAttribute("columnPrefix");
     String typeHandler = context.getStringAttribute("typeHandler");
