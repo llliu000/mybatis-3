@@ -33,7 +33,14 @@ import org.apache.ibatis.type.TypeHandlerRegistry;
  */
 public abstract class BaseBuilder {
   protected final Configuration configuration;
+  /**
+   * 使用＜typeAliases>标签定义别名
+   */
   protected final TypeAliasRegistry typeAliasRegistry;
+  /**
+   * mybatis-config.xml中配置<TypeHandlers></TypeHandlers>标签添加自定义类型转换器
+   * 完成指定数据库类型与java类型的转换
+   */
   protected final TypeHandlerRegistry typeHandlerRegistry;
 
   public BaseBuilder(Configuration configuration) {

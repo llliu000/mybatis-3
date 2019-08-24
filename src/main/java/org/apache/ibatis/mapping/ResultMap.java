@@ -32,22 +32,31 @@ import org.apache.ibatis.reflection.ParamNameUtil;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * 每个＜resultMap＞节点 会被解析成一个ResultMap对象
  * @author Clinton Begin
  */
 public class ResultMap {
   private Configuration configuration;
 
+  //resultMap 节点的 id 属性
   private String id;
+  //<resultMap>的type属性
   private Class<?> type;
   private List<ResultMapping> resultMappings;
+  //记录了映射关系中带有 ID 标志的映射关系，例如 id 节点和 constructor 节点的＜ idArg> 子节点
   private List<ResultMapping> idResultMappings;
   private List<ResultMapping> constructorResultMappings;
+  //记录了映射关系中不带有 Constructor 标志的映射关系
   private List<ResultMapping> propertyResultMappings;
+  //记录所有映射关系中涉及的 column 属性的集合
   private Set<String> mappedColumns;
   private Set<String> mappedProperties;
   private Discriminator discriminator;
+  //／是否含有嵌套的结果映射
   private boolean hasNestedResultMaps;
+  //是否含有嵌套查询
   private boolean hasNestedQueries;
+  //是否开启自动映射
   private Boolean autoMapping;
 
   private ResultMap() {

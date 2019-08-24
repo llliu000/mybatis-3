@@ -48,8 +48,8 @@ import java.util.Properties;
  */
 public class XMLConfigBuilder extends BaseBuilder {
 
-  private boolean parsed;
-  private final XPathParser parser;
+  private boolean parsed;//标示是否已经解析过mybatis-config.xml配置文件
+  private final XPathParser parser;//xml解析器
   private String environment;
   private final ReflectorFactory localReflectorFactory = new DefaultReflectorFactory();
 
@@ -91,6 +91,7 @@ public class XMLConfigBuilder extends BaseBuilder {
       throw new BuilderException("Each XMLConfigBuilder can only be used once.");
     }
     parsed = true;
+    //在mybatis-config.xml配置文件中查找<configuration>节点开始解析
     parseConfiguration(parser.evalNode("/configuration"));
     return configuration;
   }

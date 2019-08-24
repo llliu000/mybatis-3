@@ -26,19 +26,28 @@ import org.apache.ibatis.type.TypeHandler;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
 /**
+ * 每个ResultMapping对象记录了结果集中的一列与javabean中一个属性之间的映射关系
  * @author Clinton Begin
  */
 public class ResultMapping {
 
   private Configuration configuration;
   private String property;
-  private String column;
-  private Class<?> javaType;
-  private JdbcType jdbcType;
-  private TypeHandler<?> typeHandler;
+  private String column;//数据库中的列名或者列的别名
+  private Class<?> javaType;//对应java类型
+  private JdbcType jdbcType;//对应数据库jdbc类型
+  private TypeHandler<?> typeHandler;//类型处理器
+  /**
+   * 对应节点的resultMap属性,该属性通过id引用了另一个<resultMap＞节点定义，
+   * 它负责将结果集中的一部分列映射成其他关联的结果对象
+   */
   private String nestedResultMapId;
+  /**
+   * 对应节点的select属性，该属性通过id引用了另一个 <select＞节点定义，
+   * 它会把指定的列的位传入select属性指定的 select 语句中作为参数进行查询
+   */
   private String nestedQueryId;
-  private Set<String> notNullColumns;
+  private Set<String> notNullColumns;//非空的拆分结果
   private String columnPrefix;
   private List<ResultFlag> flags;
   private List<ResultMapping> composites;
