@@ -45,8 +45,10 @@ public class XMLIncludeTransformer {
 
   public void applyIncludes(Node source) {
     Properties variablesContext = new Properties();
+    //获取mybatis-config.xml中<properties>节点定义的变量集合
     Properties configurationVariables = configuration.getVariables();
     Optional.ofNullable(configurationVariables).ifPresent(variablesContext::putAll);
+    //处理sql中<include>标签(方法重载)
     applyIncludes(source, variablesContext, false);
   }
 
@@ -57,13 +59,20 @@ public class XMLIncludeTransformer {
    */
   private void applyIncludes(Node source, final Properties variablesContext, boolean included) {
     if (source.getNodeName().equals("include")) {
+      //查找ref-id属性指向的<sql>标签,返回的是深度克隆的Node对象
       Node toInclude = findSqlFragment(getStringAttribute(source, "refid"), variablesContext);
+      //解析＜include>节点下的<property>节点，将得到的键值对添加到 variablesContext中
+      //形成新 Properties 对象返回，用于替换占位符
       Properties toIncludeContext = getVariablesContext(source, variablesContext);
+      //／递归处理＜include＞节点， 在<sql>节点中可能会使用<include>引用了其他 SQL片段
       applyIncludes(toInclude, toIncludeContext, true);
+
       if (toInclude.getOwnerDocument() != source.getOwnerDocument()) {
         toInclude = source.getOwnerDocument().importNode(toInclude, true);
       }
+      //将＜include>节点替换成<sql>节点
       source.getParentNode().replaceChild(toInclude, source);
+      //将＜sql>节点的子节点添加到<sql>节点前面
       while (toInclude.hasChildNodes()) {
         toInclude.getParentNode().insertBefore(toInclude.getFirstChild(), toInclude);
       }
@@ -72,6 +81,7 @@ public class XMLIncludeTransformer {
       if (included && !variablesContext.isEmpty()) {
         // replace variables in attribute values
         NamedNodeMap attributes = source.getAttributes();
+        //遍历当前 SQL 语句的子节点
         for (int i = 0; i < attributes.getLength(); i++) {
           Node attr = attributes.item(i);
           attr.setNodeValue(PropertyParser.parse(attr.getNodeValue(), variablesContext));
@@ -83,6 +93,7 @@ public class XMLIncludeTransformer {
       }
     } else if (included && source.getNodeType() == Node.TEXT_NODE
         && !variablesContext.isEmpty()) {
+      //使用之前解析得到的 Properties 对象替换对应的 位符
       // replace variables in text node
       source.setNodeValue(PropertyParser.parse(source.getNodeValue(), variablesContext));
     }

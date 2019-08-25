@@ -29,26 +29,27 @@ import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.session.Configuration;
 
 /**
+ * 映射配置文件中定义的SQL节点
  * @author Clinton Begin
  */
 public final class MappedStatement {
 
-  private String resource;
+  private String resource;//节点中id属性(包括命名空间前缀)
   private Configuration configuration;
   private String id;
   private Integer fetchSize;
   private Integer timeout;
-  private StatementType statementType;
-  private ResultSetType resultSetType;
-  private SqlSource sqlSource;
+  private StatementType statementType;//语句类型
+  private ResultSetType resultSetType;//结果集类型
+  private SqlSource sqlSource;//SqlSource 对象，对应一条 SQL 语句
   private Cache cache;
   private ParameterMap parameterMap;
   private List<ResultMap> resultMaps;
   private boolean flushCacheRequired;
   private boolean useCache;
   private boolean resultOrdered;
-  private SqlCommandType sqlCommandType;
-  private KeyGenerator keyGenerator;
+  private SqlCommandType sqlCommandType;//SQL 的类型 INSERT UPDATE DELETE SELECT、FLUSH
+  private KeyGenerator keyGenerator;//主键
   private String[] keyProperties;
   private String[] keyColumns;
   private boolean hasNestedResultMaps;

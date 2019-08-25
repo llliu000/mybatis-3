@@ -54,6 +54,10 @@ public class XMLStatementBuilder extends BaseBuilder {
   }
 
   public void parseStatementNode() {
+    /**
+     * 获取SQL节点的id以及databaseId属性，若其databaseId属性值与当前使用的数据库不匹配，
+     * 则不加载该SQL节点；若存在相同id且databaseId 不为空的 SQL 节点，则不再加载该 SQL 节点
+     */
     String id = context.getStringAttribute("id");
     String databaseId = context.getStringAttribute("databaseId");
 
@@ -61,6 +65,7 @@ public class XMLStatementBuilder extends BaseBuilder {
       return;
     }
 
+    //根据 SQL 节点的名称决定其 SqlCommandType(增删查改...)
     String nodeName = context.getNode().getNodeName();
     SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
     boolean isSelect = sqlCommandType == SqlCommandType.SELECT;
@@ -68,9 +73,10 @@ public class XMLStatementBuilder extends BaseBuilder {
     boolean useCache = context.getBooleanAttribute("useCache", isSelect);
     boolean resultOrdered = context.getBooleanAttribute("resultOrdered", false);
 
+    //处理sql中包含了<include>标签的解析
     // Include Fragments before parsing
     XMLIncludeTransformer includeParser = new XMLIncludeTransformer(configuration, builderAssistant);
-    includeParser.applyIncludes(context.getNode());
+    includeParser.applyIncludes(context.getNode());//sql处理核心方法
 
     String parameterType = context.getStringAttribute("parameterType");
     Class<?> parameterTypeClass = resolveClass(parameterType);
