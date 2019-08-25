@@ -50,7 +50,9 @@ public class XMLScriptBuilder extends BaseBuilder {
     initNodeHandlerMap();
   }
 
-
+  /**
+   * 初始化动态标签相应的解析器
+   */
   private void initNodeHandlerMap() {
     nodeHandlerMap.put("trim", new TrimHandler());
     nodeHandlerMap.put("where", new WhereHandler());
@@ -64,6 +66,7 @@ public class XMLScriptBuilder extends BaseBuilder {
   }
 
   public SqlSource parseScriptNode() {
+    //首先判断当前的节点是不是有动态SQL，动态SQL会包括占位符或是动态SQL的相关节点
     MixedSqlNode rootSqlNode = parseDynamicTags(context);
     SqlSource sqlSource;
     if (isDynamic) {
@@ -74,14 +77,21 @@ public class XMLScriptBuilder extends BaseBuilder {
     return sqlSource;
   }
 
+  /**
+   * 动态标签解析
+   */
   protected MixedSqlNode parseDynamicTags(XNode node) {
     List<SqlNode> contents = new ArrayList<>();
+    //获取所有子节点
     NodeList children = node.getNode().getChildNodes();
     for (int i = 0; i < children.getLength(); i++) {
+      //创建XNode，该过程会将能解析掉的$｛｝都解析掉
       XNode child = node.newXNode(children.item(i));
+      //对文本节点的处理
       if (child.getNode().getNodeType() == Node.CDATA_SECTION_NODE || child.getNode().getNodeType() == Node.TEXT_NODE) {
         String data = child.getStringBody("");
         TextSqlNode textSqlNode = new TextSqlNode(data);
+        //解析SQL语句，如果含有未解析的”$｛｝”占位符，则为动态 SQL
         if (textSqlNode.isDynamic()) {
           contents.add(textSqlNode);
           isDynamic = true;
@@ -89,11 +99,14 @@ public class XMLScriptBuilder extends BaseBuilder {
           contents.add(new StaticTextSqlNode(data));
         }
       } else if (child.getNode().getNodeType() == Node.ELEMENT_NODE) { // issue #628
+        //如果子节点是个标签，那么一定是动态 SQL，并且根据不同的动态标签生成不同的 NodeHandler
         String nodeName = child.getNode().getNodeName();
+        //包含trim、where、set、foreach、if等标签的解析控制器
         NodeHandler handler = nodeHandlerMap.get(nodeName);
         if (handler == null) {
           throw new BuilderException("Unknown element <" + nodeName + "> in SQL statement.");
         }
+        //处理动态SQL，并将解析得到的SqlNode对象放入contents集合中保存
         handler.handleNode(child, contents);
         isDynamic = true;
       }
