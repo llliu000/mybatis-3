@@ -76,7 +76,7 @@ public class XMLStatementBuilder extends BaseBuilder {
     //处理sql中包含了<include>标签的解析
     // Include Fragments before parsing
     XMLIncludeTransformer includeParser = new XMLIncludeTransformer(configuration, builderAssistant);
-    includeParser.applyIncludes(context.getNode());//sql处理核心方法
+    includeParser.applyIncludes(context.getNode());
 
     String parameterType = context.getStringAttribute("parameterType");
     Class<?> parameterTypeClass = resolveClass(parameterType);
@@ -90,8 +90,13 @@ public class XMLStatementBuilder extends BaseBuilder {
 
     // Parse the SQL (pre: <selectKey> and <include> were parsed and removed)
     KeyGenerator keyGenerator;
+    //获取<SelectKey>节点对应的SelectKeyGenerator的id
     String keyStatementId = id + SelectKeyGenerator.SELECT_KEY_SUFFIX;
     keyStatementId = builderAssistant.applyCurrentNamespace(keyStatementId, true);
+    /**
+     * 这里会检测SQL节点是否配置了<selectKey>节点、SQL节点的seGeneratedKeys属性值、
+     * mybatis-config.xml中全局的seGeneratedKey配置，以及是否为 insert语句，决定使用的KeyGenerator接口实现
+     */
     if (configuration.hasKeyGenerator(keyStatementId)) {
       keyGenerator = configuration.getKeyGenerator(keyStatementId);
     } else {
@@ -100,6 +105,7 @@ public class XMLStatementBuilder extends BaseBuilder {
           ? Jdbc3KeyGenerator.INSTANCE : NoKeyGenerator.INSTANCE;
     }
 
+    //sql处理核心方法
     SqlSource sqlSource = langDriver.createSqlSource(configuration, context, parameterTypeClass);
     StatementType statementType = StatementType.valueOf(context.getStringAttribute("statementType", StatementType.PREPARED.toString()));
     Integer fetchSize = context.getIntAttribute("fetchSize");
