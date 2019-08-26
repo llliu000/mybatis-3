@@ -96,15 +96,15 @@ public class XMLMapperBuilder extends BaseBuilder {
        * 记录了已加载的映射文件
        */
       configuration.addLoadedResource(resource);
-      bindMapperForNamespace();
+      bindMapperForNamespace();//解析并绑定方法与配置文件的关系
     }
 
     //在解析失败后重试加载（同步操作、仅一次）
-    //处理 configurationElement （）方法 解析失败的＜resultMap> 节点
+    //处理 configurationElement()方法解析失败的＜resultMap> 节点
     parsePendingResultMaps();
-    //处理 configurationElement （）方 法中解析失败的＜cache-ref＞节点
+    //处理 configurationElement()方法中解析失败的＜cache-ref＞节点
     parsePendingCacheRefs();
-    //处理 configurationElement （）方 法中解析失败的 SQL 语句节点
+    //处理 configurationElement()方法中解析失败的 SQL 语句节点
     parsePendingStatements();
   }
 
@@ -184,11 +184,13 @@ public class XMLMapperBuilder extends BaseBuilder {
   }
 
   private void parsePendingStatements() {
+    //获取第一次解析失败的集合
     Collection<XMLStatementBuilder> incompleteStatements = configuration.getIncompleteStatements();
     synchronized (incompleteStatements) {
       Iterator<XMLStatementBuilder> iter = incompleteStatements.iterator();
       while (iter.hasNext()) {
         try {
+          //重新解析 SQL 语句节点
           iter.next().parseStatementNode();
           iter.remove();
         } catch (IncompleteElementException e) {
@@ -456,6 +458,7 @@ public class XMLMapperBuilder extends BaseBuilder {
   }
 
   private void bindMapperForNamespace() {
+    //获取映射配文件的命名空间
     String namespace = builderAssistant.getCurrentNamespace();
     if (namespace != null) {
       Class<?> boundType = null;
