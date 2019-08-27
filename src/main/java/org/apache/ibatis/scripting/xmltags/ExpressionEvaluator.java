@@ -29,6 +29,7 @@ import org.apache.ibatis.builder.BuilderException;
 public class ExpressionEvaluator {
 
   public boolean evaluateBoolean(String expression, Object parameterObject) {
+    //首先通过OGNL解析表达式的值
     Object value = OgnlCache.getValue(expression, parameterObject);
     if (value instanceof Boolean) {
       return (Boolean) value;

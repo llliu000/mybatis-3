@@ -16,6 +16,7 @@
 package org.apache.ibatis.scripting.xmltags;
 
 /**
+ * 记录了对应的非动态 SQL 语句节点
  * @author Clinton Begin
  */
 public class StaticTextSqlNode implements SqlNode {

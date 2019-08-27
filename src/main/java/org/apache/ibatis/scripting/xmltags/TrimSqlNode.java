@@ -29,9 +29,10 @@ import org.apache.ibatis.session.Configuration;
  */
 public class TrimSqlNode implements SqlNode {
 
-  private final SqlNode contents;
-  private final String prefix;
+  private final SqlNode contents;//该＜trim>节点的子节点
+  private final String prefix;//记录前缀字符串（为＜trim＞节点包袤的 SQL 语句添加的前缀）
   private final String suffix;
+  //／如果＜ trim＞节点包袤的 SQL 语句是空语句（经常 现在 if 判断为否的情况下），删除指定的前缀
   private final List<String> prefixesToOverride;
   private final List<String> suffixesToOverride;
   private final Configuration configuration;

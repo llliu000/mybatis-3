@@ -23,6 +23,7 @@ import org.apache.ibatis.scripting.ScriptingException;
 import org.apache.ibatis.type.SimpleTypeRegistry;
 
 /**
+ * 包含“$｛｝”占位符的动态 SQL 节点。
  * @author Clinton Begin
  */
 public class TextSqlNode implements SqlNode {
@@ -52,7 +53,7 @@ public class TextSqlNode implements SqlNode {
     context.appendSql(parser.parse(text));
     return true;
   }
-
+  //解析”$｛｝”占位符
   private GenericTokenParser createParser(TokenHandler handler) {
     return new GenericTokenParser("${", "}", handler);
   }

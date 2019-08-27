@@ -38,10 +38,15 @@ public class DynamicContext {
     OgnlRuntime.setPropertyAccessor(ContextMap.class, new ContextAccessor());
   }
 
-  private final ContextMap bindings;
+  private final ContextMap bindings;//参数上下文
+  //在 SqlNode解析动态SQL时，会将解析后的SQL语句片段添加到该属性中保存，最终拼凑出一条完成的 SQL 语句
   private final StringJoiner sqlBuilder = new StringJoiner(" ");
   private int uniqueNumber = 0;
 
+  /**
+   *
+   * @param parameterObject : 运行时用户传入的参数,其中包含了后续用于替换“＃｛｝ ”占位符的实参。
+   */
   public DynamicContext(Configuration configuration, Object parameterObject) {
     if (parameterObject != null && !(parameterObject instanceof Map)) {
       MetaObject metaObject = configuration.newMetaObject(parameterObject);
@@ -65,6 +70,9 @@ public class DynamicContext {
     sqlBuilder.add(sql);
   }
 
+  /**
+   * 获取解析后的、完整的SQL语句
+   */
   public String getSql() {
     return sqlBuilder.toString().trim();
   }
@@ -76,6 +84,7 @@ public class DynamicContext {
   static class ContextMap extends HashMap<String, Object> {
     private static final long serialVersionUID = 2977601501966151582L;
 
+    //将用户传入的参数封装成了 MetaObject 对象
     private MetaObject parameterMetaObject;
 
     public ContextMap(MetaObject parameterMetaObject) {
@@ -89,6 +98,7 @@ public class DynamicContext {
         return super.get(strKey);
       }
 
+      //从运行时参数中查找对应属性
       if (parameterMetaObject != null) {
         // issue #61 do not modify the context when reading
         return parameterMetaObject.getValue(strKey);
