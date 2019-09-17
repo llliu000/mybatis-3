@@ -22,9 +22,9 @@ import org.apache.ibatis.session.ResultContext;
  */
 public class DefaultResultContext<T> implements ResultContext<T> {
 
-  private T resultObject;
-  private int resultCount;
-  private boolean stopped;
+  private T resultObject;//暂存映射后的结果对象，之后会将该对象放入DefaultResultHandler.list集合中
+  private int resultCount;//记录经过 DefaultResultContext 暂存的对象个数
+  private boolean stopped;//／控制是否停止映射
 
   public DefaultResultContext() {
     resultObject = null;
